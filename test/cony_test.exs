@@ -1,13 +1,18 @@
 defmodule ConyTest do
   use ExUnit.Case, asyn: true
 
+  defmodule WrapParser do
+    def parse(:string, value), do: {:ok, "<<#{value}>>"}
+  end
+
   defmodule TestConfig do
     import Cony
 
-    config prefix: "test_" do
+    config env_prefix: "test_" do
       var :some_string, :string, default: "test string"
       var :some_number, :integer
       var :not_set, :string
+      var :wrap, :string, parser: WrapParser
     end
   end
 
@@ -33,7 +38,7 @@ defmodule ConyTest do
     end
   end
 
-  test "get!/1 returns the corrent environment variable" do
+  test "get!/1 returns the correct environment variable" do
     System.put_env("TEST_SOME_STRING", "some string")
     System.put_env("TEST_SOME_NUMBER", "123")
 
@@ -45,5 +50,10 @@ defmodule ConyTest do
     assert_raise Cony.MissingVariableError, fn ->
       TestConfig.get!(:not_set)
     end
+  end
+
+  test "variables can be given a specific parser" do
+    System.put_env("TEST_WRAP", "some string")
+    assert TestConfig.get(:wrap) == "<<some string>>"
   end
 end

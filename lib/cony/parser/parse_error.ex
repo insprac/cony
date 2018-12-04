@@ -36,7 +36,7 @@ defmodule Cony.Parser.ParseError do
   def message(%__MODULE__{type: type, value: value, message: message}) do
     """
     Unable to parse value: #{message}
-      type: #{type}
+      type: #{inspect(type)}
       value: #{value}
     """
   end

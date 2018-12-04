@@ -4,20 +4,11 @@ defmodule Cony.MixProject do
   def project do
     [
       app: :cony,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.7",
-      start_permanent: Mix.env() == :prod,
-      deps: deps()
+      start_permanent: Mix.env() == :prod
     ]
   end
 
-  def application do
-    [
-      extra_applications: [:logger]
-    ]
-  end
-
-  defp deps do
-    []
-  end
+  def application, do: []
 end
