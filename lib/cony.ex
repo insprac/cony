@@ -76,13 +76,15 @@ defmodule Cony do
       end
 
   """
+  @type config_options :: list({:prefix, String.t} | {:parser, module})
   @type var :: {var_type, var_options}
   @type var_type :: :string | :integer | atom
   @type var_key :: atom
   @type var_name :: String.t
   @type var_value :: String.t
-  @type var_options :: {:default, any} | {:parser, module}
+  @type var_options :: list({:default, any} | {:parser, module})
 
+  @spec config(config_options, Keyword.t) :: :ok
   defmacro config(opts \\ [], do: block) do
     quote do
       import Cony, only: [var: 2, var: 3]
@@ -140,13 +142,18 @@ defmodule Cony do
           {:error, error} -> raise error
         end
       end
+
+      :ok
     end
   end
 
+  @spec var(var_key, var_type, var_options) :: :ok
   defmacro var(key, type, opts \\ []) do
     quote do
       variable = {unquote(key), {unquote(type), unquote(opts)}}
       Module.put_attribute(__MODULE__, :variables, variable)
+
+      :ok
     end
   end
 end
