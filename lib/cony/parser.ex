@@ -5,7 +5,7 @@ defmodule Cony.Parser do
 
   alias Cony.Parser.ParseError
 
-  @spec parse(Cony.var_type, Cony.var_value) 
+  @spec parse(Cony.variable_type, Cony.variable_value) 
   :: {:ok, any} | {:error, ParseError.t}
   def parse(:string, value) do
     {:ok, value}

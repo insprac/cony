@@ -15,10 +15,10 @@ defmodule Cony do
         import Cony
 
         config env_prefix: "my_app_repo_" do
-          var :username, :string
-          var :password, :string
-          var :database, :string
-          var :hostname, :string, default: "localhost"
+          add :username, :string
+          add :password, :string
+          add :database, :string
+          add :hostname, :string, default: "localhost"
         end
       end
 
@@ -26,12 +26,13 @@ defmodule Cony do
         use Ecto.Repo, otp_app: :my_app, adapter: Ecto.Adapters.Postgres
     
         def init(_, config) do
-          config = Keyword.merge(config, [
-            username: MyApp.RepoConfig.get!(:username),
-            password: MyApp.RepoConfig.get!(:password),
-            database: MyApp.RepoConfig.get!(:database),
-            hostname: MyApp.RepoConfig.get!(:hostname)
-          ])
+          config = 
+            Keyword.merge(config, [
+              username: MyApp.RepoConfig.get!(:username),
+              password: MyApp.RepoConfig.get!(:password),
+              database: MyApp.RepoConfig.get!(:database),
+              hostname: MyApp.RepoConfig.get!(:hostname)
+            ])
 
           {:ok, config}
         end
@@ -70,24 +71,23 @@ defmodule Cony do
         import Cony
 
         config parser: MyApp.ConfigParser do
-          var :some_text, :string
-          var :some_list, {:list, " ", :string}, parser: MyApp.ListParser
+          add :some_text, :string
+          add :some_list, {:list, " ", :string}, parser: MyApp.ListParser
         end
       end
 
   """
   @type config_options :: list({:prefix, String.t} | {:parser, module})
-  @type var :: {var_type, var_options}
-  @type var_type :: :string | :integer | atom
-  @type var_key :: atom
-  @type var_name :: String.t
-  @type var_value :: String.t
-  @type var_options :: list({:default, any} | {:parser, module})
+  @type variable :: {variable_type, variable_options}
+  @type variable_type :: :string | :integer | atom
+  @type variable_key :: atom
+  @type variable_name :: String.t
+  @type variable_value :: String.t
+  @type variable_options :: list({:default, any} | {:parser, module})
 
-  @spec config(config_options, Keyword.t) :: :ok
   defmacro config(opts \\ [], do: block) do
     quote do
-      import Cony, only: [var: 2, var: 3]
+      import Cony, only: [add: 2, add: 3]
 
       Module.register_attribute(__MODULE__, :variables, accumulate: true)
 
@@ -96,7 +96,7 @@ defmodule Cony do
 
       unquote(block)
 
-      @spec get(Cony.var_key) :: any
+      @spec get(Cony.variable_key) :: any
       def get!(key) do
         {type, opts} = find_variable(key)
         name = variable_name(key)
@@ -107,7 +107,7 @@ defmodule Cony do
         end
       end
 
-      @spec get(Cony.var_key) :: any
+      @spec get(Cony.variable_key) :: any
       def get(key) do
         {type, opts} = find_variable(key)
         name = variable_name(key)
@@ -118,12 +118,12 @@ defmodule Cony do
         end
       end
 
-      @spec variable_name(Cony.var_key) :: Cony.var_name
+      @spec variable_name(Cony.variable_key) :: Cony.variable_name
       defp variable_name(key) do
         String.upcase("#{@env_prefix}#{key}")
       end
 
-      @spec find_variable(Cony.var_key) :: Cony.var
+      @spec find_variable(Cony.variable_key) :: Cony.variable
       defp find_variable(key) do
         case Enum.find(@variables, fn {k, _} -> k == key end) do
           {_key, {type, options}} ->
@@ -133,7 +133,11 @@ defmodule Cony do
         end
       end
 
-      @spec parse_value(Cony.var_type, Cony.var_value, Cony.var_options) :: any
+      @spec parse_value(
+        Cony.variable_type,
+        Cony.variable_value,
+        Cony.variable_options
+      ) :: any
       defp parse_value(type, value, opts) do
         parser = Keyword.get(opts, :parser, @parser)
 
@@ -147,8 +151,7 @@ defmodule Cony do
     end
   end
 
-  @spec var(var_key, var_type, var_options) :: :ok
-  defmacro var(key, type, opts \\ []) do
+  defmacro add(key, type, opts \\ []) do
     quote do
       variable = {unquote(key), {unquote(type), unquote(opts)}}
       Module.put_attribute(__MODULE__, :variables, variable)

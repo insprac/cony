@@ -2,11 +2,11 @@ defmodule Cony.MissingVariableError do
   defexception [:key, :name]
 
   @type t :: %__MODULE__{
-    key: Cony.var_key,
-    name: Cony.var_name
+    key: Cony.variable_key,
+    name: Cony.variable_name
   }
 
-  @spec exception({Cony.var_key, Cony.var_name}) :: t
+  @spec exception({Cony.variable_key, Cony.variable_name}) :: Exception.t
   def exception({key, name}) do
     %__MODULE__{key: key, name: name}
   end

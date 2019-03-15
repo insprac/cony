@@ -2,8 +2,8 @@ defmodule Cony.Parser.ParseError do
   defexception type: nil, value: nil, message: "invalid value"
 
   @type t :: %__MODULE__{
-    type: Cony.var_type,
-    value: Cony.var_value,
+    type: Cony.variable_type,
+    value: Cony.variable_value,
     message: String.t
   }
 
@@ -27,7 +27,7 @@ defmodule Cony.Parser.ParseError do
       }
 
   """
-  @spec create(Cony.type, Cony.value, String.t) :: t
+  @spec create(Cony.variable_type, Cony.variable_value, String.t) :: t
   def create(type, value, message \\ "invalid value") do
     %__MODULE__{type: type, value: value, message: message}
   end

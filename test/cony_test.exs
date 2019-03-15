@@ -9,10 +9,10 @@ defmodule ConyTest do
     import Cony
 
     config env_prefix: "test_" do
-      var :some_string, :string, default: "test string"
-      var :some_number, :integer
-      var :not_set, :string
-      var :wrap, :string, parser: WrapParser
+      add :some_string, :string, default: "test string"
+      add :some_number, :integer
+      add :not_set, :string
+      add :wrap, :string, parser: WrapParser
     end
   end
 
