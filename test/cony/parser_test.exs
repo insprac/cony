@@ -10,8 +10,16 @@ defmodule Cony.ParserTest do
     assert {:ok, 42} = Cony.Parser.parse(:integer, "42")
     assert {:ok, 1.3} = Cony.Parser.parse(:float, "1.3")
     assert {:ok, 1.0} = Cony.Parser.parse(:float, "1")
+    assert {:ok, true} = Cony.Parser.parse(:boolean, "true")
+    assert {:ok, false} = Cony.Parser.parse(:boolean, "false")
+    assert {:ok, nil} = Cony.Parser.parse(:boolean, "something else")
+    assert {:ok, [1, 2, 3]} = Cony.Parser.parse({:list, :integer}, "1,2,3")
+    assert {:ok, ["test", "values"]} =
+      Cony.Parser.parse({:list, :string, delimiter: "|"}, "test|values")
 
     assert {:error, %ParseError{}} = Cony.Parser.parse(:integer, "abc")
     assert {:error, %ParseError{}} = Cony.Parser.parse(:float, "lkjsdf")
+    assert {:error, %ParseError{}} =
+      Cony.Parser.parse({:list, :integer}, "1,bad")
   end
 end

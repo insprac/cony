@@ -61,8 +61,13 @@ defmodule Cony do
             true ->
               {:ok, Enum.map(results, fn {_, value} -> value end)}
             false ->
-              {:error, Cony.Parser.ParseError.create(
-                {:list, delimiter, subtype}, value, "invalid list element"})}
+              error = 
+                %Cony.Parser.ParseError{
+                  type: {:list, delimiter, subtype},
+                  value: value,
+                  message: "invalid list element"
+                }
+              {:error, error}
           end
         end
       end
