@@ -9,7 +9,7 @@ defmodule Cony do
       MY_APP_REPO_PASSWORD="s3cr3t"
       MY_APP_REPO_DATABASE="my_app"
       MY_APP_REPO_HOSTNAME="localhost"
-      
+
 
       defmodule MyApp.RepoConfig do
         import Cony
@@ -24,9 +24,9 @@ defmodule Cony do
 
       defmodule MyApp.Repo do
         use Ecto.Repo, otp_app: :my_app, adapter: Ecto.Adapters.Postgres
-    
+
         def init(_, config) do
-          config = 
+          config =
             Keyword.merge(config, [
               username: MyApp.RepoConfig.get!(:username),
               password: MyApp.RepoConfig.get!(:password),
@@ -61,7 +61,7 @@ defmodule Cony do
             true ->
               {:ok, Enum.map(results, fn {_, value} -> value end)}
             false ->
-              error = 
+              error =
                 %Cony.Parser.ParseError{
                   type: {:list, delimiter, subtype},
                   value: value,
@@ -101,7 +101,7 @@ defmodule Cony do
 
       unquote(block)
 
-      @spec get(Cony.variable_key) :: any
+      @spec get!(Cony.variable_key) :: any
       def get!(key) do
         {type, opts} = find_variable(key)
         name = variable_name(key)
