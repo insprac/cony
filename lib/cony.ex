@@ -107,7 +107,12 @@ defmodule Cony do
         name = variable_name(key)
 
         case System.get_env(name) do
-          nil -> raise Cony.MissingVariableError, {key, name}
+          nil ->
+            if Keyword.has_key?(opts, :default) do
+              Keyword.get(opts, :default)
+            else
+              raise Cony.MissingVariableError, {key, name}
+            end
           value -> parse_value(type, value, opts)
         end
       end
@@ -118,8 +123,14 @@ defmodule Cony do
         name = variable_name(key)
 
         case System.get_env(name) do
-          nil -> nil
-          value -> parse_value(type, value, opts)
+          nil ->
+            if Keyword.has_key?(opts, :default) do
+              Keyword.get(opts, :default)
+            else
+              nil
+            end
+          value ->
+            parse_value(type, value, opts)
         end
       end
 

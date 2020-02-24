@@ -13,6 +13,8 @@ defmodule ConyTest do
       add :some_number, :integer
       add :not_set, :string
       add :wrap, :string, parser: WrapParser
+      add :defaults_to_five, :integer, default: 5
+      add :defaults_to_nil, :string, default: nil
     end
   end
 
@@ -38,6 +40,13 @@ defmodule ConyTest do
     end
   end
 
+  test "get/1 returns default if variable is missing" do
+    System.delete_env("TEST_DEFAULTS_TO_FIVE")
+    assert TestConfig.get(:defaults_to_five) == 5
+    System.put_env("TEST_DEFAULTS_TO_FIVE", "30")
+    assert TestConfig.get(:defaults_to_five) == 30
+  end
+
   test "get!/1 returns the correct environment variable" do
     System.put_env("TEST_SOME_STRING", "some string")
     System.put_env("TEST_SOME_NUMBER", "123")
@@ -50,6 +59,19 @@ defmodule ConyTest do
     assert_raise Cony.MissingVariableError, fn ->
       TestConfig.get!(:not_set)
     end
+  end
+
+  test "get!/1 returns default if variable is missing" do
+    System.delete_env("TEST_DEFAULTS_TO_FIVE")
+    assert TestConfig.get!(:defaults_to_five) == 5
+    System.put_env("TEST_DEFAULTS_TO_FIVE", "30")
+    assert TestConfig.get!(:defaults_to_five) == 30
+  end
+
+  test "get!/1 doesn't raise when default is nil" do
+    assert TestConfig.get!(:defaults_to_nil) == nil
+    System.put_env("TEST_DEFAULTS_TO_NIL", "test")
+    assert TestConfig.get!(:defaults_to_nil) == "test"
   end
 
   test "variables can be given a specific parser" do
